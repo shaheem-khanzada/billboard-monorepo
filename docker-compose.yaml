@@ -7,6 +7,7 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
+      - VITE_API_BASE_URL=https://billboard-backend.furqan.codes
     env_file:
       - ./web/.env
     depends_on:
