@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Billboard WebSocket Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        #status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .connected {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        #events {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            height: 400px;
+            overflow-y: auto;
+        }
+        .event {
+            margin: 5px 0;
+            padding: 5px;
+            border-bottom: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <h1>Billboard WebSocket Test</h1>
+    <div id="status" class="disconnected">Disconnected</div>
+    <div id="events"></div>
+
+    <script>
+        const status = document.getElementById('status');
+        const events = document.getElementById('events');
+        let ws;
+
+        function connect() {
+            ws = new WebSocket('ws://127.0.0.1:8545');
+
+            ws.onopen = () => {
+                status.textContent = 'Connected';
+                status.className = 'connected';
+                addEvent('WebSocket connected');
+            };
+
+            ws.onclose = () => {
+                status.textContent = 'Disconnected';
+                status.className = 'disconnected';
+                addEvent('WebSocket disconnected');
+                // Try to reconnect after 5 seconds
+                setTimeout(connect, 5000);
+            };
+
+            ws.onerror = (error) => {
+                status.textContent = 'Error';
+                status.className = 'disconnected';
+                addEvent('WebSocket error: ' + error.message);
+            };
+
+            ws.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    addEvent('Received: ' + JSON.stringify(data, null, 2));
+                } catch (e) {
+                    addEvent('Received: ' + event.data);
+                }
+            };
+        }
+
+        function addEvent(message) {
+            const div = document.createElement('div');
+            div.className = 'event';
+            div.textContent = `${new Date().toLocaleTimeString()} - ${message}`;
+            events.insertBefore(div, events.firstChild);
+        }
+
+        // Start connection
+        connect();
+    </script>
+</body>
+</html> 
