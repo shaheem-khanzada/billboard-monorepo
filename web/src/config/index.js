@@ -1,11 +1,8 @@
 import { getDefaultConfig } from "@rainbow-me/rainbowkit";
 import { localhost, mainnet, sepolia } from "viem/chains";
 
-console.log("env", import.meta.env);
-console.log("import.meta.env.VITE_API_BASE_URL", import.meta.env.VITE_API_BASE_URL);
-
 export const config = {
-    baseUrl: import.meta.env.VITE_API_BASE_URL
+    baseUrl: import.meta.env.VITE_API_BASE_URL || 'https://billboard-backend.furqan.codes'
 }
 
 export const walletConfig = getDefaultConfig({
