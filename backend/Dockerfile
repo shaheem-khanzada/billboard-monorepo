@@ -22,8 +22,8 @@ COPY . .
 # Build the TypeScript files
 RUN npm run build
 
-# Expose port 7000
-EXPOSE 7000
+# Expose port 1500
+EXPOSE 1500
 
 # Start the app
 CMD npm run start
