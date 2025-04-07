@@ -21,7 +21,6 @@ RUN yarn global add serve
 
 # Copy all files
 COPY . .
-COPY .env ./
 
 # Build the app
 RUN yarn build
