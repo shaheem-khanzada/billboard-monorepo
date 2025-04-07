@@ -1,0 +1,8 @@
+#root {
+  text-align: center;
+  height: 100vh;
+}
+
+.nav-link:hover {
+  text-decoration: underline;
+}
