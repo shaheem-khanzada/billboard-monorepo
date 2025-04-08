@@ -17,19 +17,6 @@ const BillBoardPage = ({ authorized }) => {
 
   console.log("data", data);
 
-
-  const publicRedirect = (event) => {
-    const image = event.target;
-    switch (image.id) {
-      case '13':
-        console.log('clicked 14');
-        openInNewTab("https://testnets.opensea.io/assets/0x1807d2c2dfa372ad31eeab48c38bb104a254d68a/14");
-        break;
-      default:
-        break;
-    }
-  };
-
   return (
     <div style={{ background: 'white' }}>
       <div>
@@ -52,16 +39,14 @@ const BillBoardPage = ({ authorized }) => {
             </span>
           </div>
           : <Link to={'/getting-started'}>
-            <button className="btn btn-outline-dark">Start Here</button>
+            <button className="btn btn-outline-dark mb-4">Start Here</button>
           </Link>
         }
       </div>
 
       <div style={{ lineHeight: '16px' }}>
         <Container style={{ border: '2px dashed #212529' }}>
-          <br />
           <PhotoGallery data={data?.list} />
-          <br />
         </Container>
         <br />
       </div>

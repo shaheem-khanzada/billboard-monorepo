@@ -1,13 +1,4 @@
-import axios from "axios";
-import { config } from '../config';
-
-// Create Axios instance
-const api = axios.create({
-    baseURL: config.baseUrl, // Use environment variable for API URL
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+import { api } from "./axiosInstance";
 
 export const fetchAllAdvertisement = async () => {
   try {

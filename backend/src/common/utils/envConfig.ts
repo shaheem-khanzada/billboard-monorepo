@@ -14,5 +14,8 @@ export const env = cleanEnv(process.env, {
   RPC_URL: str(),
   RPC_WEBSOCKET_ENDPOINT: str(),
   ETHEREUM_PRIVATE_KEY: str(),
-  ETHEREUM_WALLET_ADDRESS: str()
+  ETHEREUM_WALLET_ADDRESS: str(),
+  PINATA_JWT: str(),
+  GATEWAY_URL: str(),
+  CONTRACT_ADDRESS: str(),
 });

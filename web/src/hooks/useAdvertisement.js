@@ -6,30 +6,42 @@ export const useAdvertisement = () => {
   return useQuery({
     queryKey: ['advertisement'],
     queryFn: async () => fetchAllAdvertisement(),
-    select: (advertisement) => {
-      const totalSlots = Array.from({ length: 100 }, (_, i) => i + 1);
-      const takenSlots = new Set(advertisement.map(item => item.tokenId));
+    select: (ads) => {
+      const MAX_SLOTS = 100;
+      const allSlotNumbers = Array.from({ length: MAX_SLOTS }, (_, i) => i + 1);
 
-      const availableSlots = totalSlots.filter(slot => !takenSlots.has(slot));
+      // Map ads by tokenId for quick lookup
+      const adByTokenId = new Map(ads.map(ad => [ad.tokenId, ad]));
 
-      const list = images.map((image, index) => {
-        if (advertisement[index]) {
+      const usedSlotIds = new Set(adByTokenId.keys());
+      const availableSlotIds = allSlotNumbers.filter(slotId => !usedSlotIds.has(slotId));
+
+      // Build final list, matching ads to their corresponding images
+      const formattedList = images.map((img) => {
+        const matchedAd = adByTokenId.get(img.id);
+
+        if (matchedAd) {
           return {
-            ...advertisement[index],
-            image: advertisement[index].metadata.image,
-            ...image
-          }
+            ...matchedAd,
+            image: matchedAd.metadata.image,
+            ...img,
+          };
         }
-        return { ...image, tokenId: image.id, image: image.src };
-      })
+
+        return {
+          ...img,
+          tokenId: img.id,
+          image: img.src,
+        };
+      });
 
       return {
-        list: list || [],
-        availableSlots: availableSlots,
-      }
+        list: formattedList,
+        availableSlots: availableSlotIds,
+      };
     },
     onError: (error) => {
-      console.error("Error Advertisement:", error);
+      console.error("Error loading advertisements:", error);
     },
   });
 };

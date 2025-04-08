@@ -45,12 +45,28 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-  }
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    background: 'rgba(0, 0, 0, 0.5)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    color: 'white',
+    fontSize: '18px',
+    fontWeight: 'bold',
+    backdropFilter: 'blur(7px)',
+    zIndex: 2,
+  },
 };
 
-const GalleryItem = ({ image }) => {
+const GalleryItem = ({ item }) => {
   const [loaded, setLoaded] = useState(false);
-  
+
   return (
     <Fragment>
       {!loaded && (
@@ -58,20 +74,27 @@ const GalleryItem = ({ image }) => {
           <Spinner animation="border" role="status" />
         </div>
       )}
-      <img
-        src={image}
-        style={styles.galleryImage}
-        onMouseOver={(e) => {
-          e.target.style.transform = 'scale(1.1)';
-        }}
-        onMouseOut={(e) => {
-          e.target.style.transform = 'scale(1)';
-        }}
-        onLoad={() => setLoaded(true)}
-      />
+      <div style={styles.galleryItem}>
+        <img
+          src={item?.image}
+          style={styles.galleryImage}
+          onMouseOver={(e) => {
+            e.target.style.transform = 'scale(1.1)';
+          }}
+          onMouseOut={(e) => {
+            e.target.style.transform = 'scale(1)';
+          }}
+          onLoad={() => setLoaded(true)}
+        />
+        {/* Blur overlay */}
+
+        {item.ipfsURI && !item.isApproved ? <div style={styles.overlay}>
+        Awaiting Approval
+        </div> : null}
+      </div>
     </Fragment>
-  )
-}
+  );
+};
 
 const PhotoGallery = ({ data }) => {
   return (
@@ -82,7 +105,7 @@ const PhotoGallery = ({ data }) => {
             key={index}
             style={styles.galleryItem}
           >
-            <GalleryItem image={item.image} />
+            <GalleryItem item={item} />
           </div>
         ))}
       </div>

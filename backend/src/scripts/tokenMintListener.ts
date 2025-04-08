@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 import cron from "node-cron";
-import { abi, address } from "@/contract/abi.json";
+import { abi } from "@/contract/abi.json";
 import { env } from "@/common/utils/envConfig";
 import { AdvertisementModel } from "../schemas/AdvertisementSchema";
 import { getEventLastBlock, saveEventLastBlock } from "./dbUtils";
@@ -12,23 +12,23 @@ let eventListenerActive = false;
 // ✅ Function to create a WebSocket provider with auto-reconnect
 async function createWebSocketProvider() {
   console.log("[WebSocket] Initializing WebSocket provider...");
-  if (provider) provider.removeAllListeners(); // Remove old listeners before re-creating
-  if (contract) contract.removeAllListeners(); // Remove old listeners before re-creating
+  if (provider) provider.removeAllListeners();
+  if (contract) contract.removeAllListeners();
 
   provider = new ethers.WebSocketProvider(env.RPC_WEBSOCKET_ENDPOINT);
-  contract = new ethers.Contract(address, abi, provider);
-  listenForEvents(); // Restart event listeners after reconnect
+  contract = new ethers.Contract(env.CONTRACT_ADDRESS, abi, provider);
+  listenForEvents();
   await fetchPastEvents();
 }
 
 // ✅ Function to disconnect WebSocket and reconnect every hour
 function restartWebSocketConnection() {
   console.log("[WebSocket] Restarting WebSocket connection to prevent memory leaks...");
-  provider.removeAllListeners(); // Remove all active event listeners
+  provider.removeAllListeners();
   provider.destroy();
   contract.removeAllListeners();
   eventListenerActive = false;
-  createWebSocketProvider(); // Reinitialize the WebSocket provider
+  createWebSocketProvider();
 }
 
 // ✅ Function with retry logic for IPFS fetch

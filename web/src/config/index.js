@@ -7,7 +7,7 @@ export const config = {
 
 export const walletConfig = getDefaultConfig({
   appName: 'My RainbowKit App',
-  projectId: 'YOUR_PROJECT_ID',
+  projectId: 'f5c370fd3a6a98eb32086e81f44f223d',
   chains: [mainnet, sepolia, localhost],
   ssr: true, // If your dApp uses server side rendering (SSR)
 });

@@ -1,7 +1,9 @@
 require("@nomicfoundation/hardhat-toolbox");
+require("@nomicfoundation/hardhat-verify");
 require("dotenv").config();
 
 const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL;
+const MAINNET_RPC_URL = process.env.RPC_URL;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 
 /** @type import('hardhat/config').HardhatUserConfig */
@@ -20,8 +22,16 @@ module.exports = {
       accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
       chainId: 11155111,
     },
+    mainnet: {
+      url: MAINNET_RPC_URL || "",
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
+      chainId: 1,
+    },
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY || "",
   },
+  sourcify: {
+    enabled: true
+  }
 };

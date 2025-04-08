@@ -2,6 +2,7 @@ import React from 'react';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Container from 'react-bootstrap/Container'
+import { useAdvertisement } from '../hooks/useAdvertisement';
 
 const styles = {
   galleryContainer: {
@@ -49,17 +50,16 @@ const styles = {
   }
 };
 
-const GalleryItem = ({ }) => {  
+const GalleryItem = ({ item }) => {  
   return (
     <Card style={{ width: '18rem' }}>
-      <Card.Img variant="top" src="https://sapphire-fellow-albatross-317.mypinata.cloud/ipfs/bafybeibslcgdt2wrprzkseezhtuoudsi2vknvwsb6klgsjz2k6pnnkfaeq" />
+      <Card.Img variant="top" src={item.metadata.image} style={{ height: 261, objectFit: 'cover' }} />
       <Card.Body>
-        <Card.Title>Card Title</Card.Title>
+        <Card.Title>{item.metadata.name}</Card.Title>
         <Card.Text>
-          Some quick example text to build on the card title and make up the
-          bulk of the card's content.
+        {item.metadata.description}
         </Card.Text>
-        <Button variant="primary">Go somewhere</Button>
+        <Button variant="primary">Approve</Button>
       </Card.Body>
     </Card>
   )
@@ -74,7 +74,7 @@ const PhotoGallery = ({ data }) => {
             key={index}
             style={styles.galleryItem}
           >
-            <GalleryItem />
+            <GalleryItem item={item} />
           </div>
         ))}
       </div>
@@ -84,12 +84,14 @@ const PhotoGallery = ({ data }) => {
 
 
 const AdminPage = () => {
+    const { data } = useAdvertisement();
+  
   return (
     <div>
        <div style={{ lineHeight: '16px' }}>
         <Container style={{ border: '2px dashed #212529' }}>
           <br />
-          <PhotoGallery data={[1,2,3,4,5,6]} />
+          <PhotoGallery data={(data?.list || []).filter((item) => item.isApproved === false)} />
           <br />
         </Container>
         <br />
