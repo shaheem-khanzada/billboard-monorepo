@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link } from 'react-router'
 import Container from 'react-bootstrap/Container'
 import Button from 'react-bootstrap/Button'
-import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
 import Spinner from 'react-bootstrap/Spinner'
 import Alert from 'react-bootstrap/Alert'
@@ -33,8 +32,8 @@ const FormExample = ({ account }) => {
   const onSubmit = async (data) => {
     const { advertisement, ...rest } = data;
     const params = await uploadFiles({ image: advertisement[0], metadata: { ...rest, wallet: account }, });
-    console.log("Upload params:", params);
-    mintToken(params);
+    console.log("Upload params:", [...params, currentPrice]);
+    mintToken([...params, currentPrice]);
   }
 
   return (

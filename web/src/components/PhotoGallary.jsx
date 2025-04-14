@@ -1,5 +1,6 @@
 import React, { Fragment, useState } from 'react';
 import { Spinner } from 'react-bootstrap';
+import NFTCard from './NFTCard';
 
 const styles = {
   galleryContainer: {
@@ -66,30 +67,37 @@ const styles = {
 
 const GalleryItem = ({ item }) => {
   const [loaded, setLoaded] = useState(false);
-
+  console.log('item', item)
   return (
     <Fragment>
-      {!loaded && (
+      {!loaded && item.minted && (
         <div style={styles.spinnerContainer}>
           <Spinner animation="border" role="status" />
         </div>
       )}
       <div style={styles.galleryItem}>
-        <img
-          src={item?.image}
-          style={styles.galleryImage}
-          onMouseOver={(e) => {
-            e.target.style.transform = 'scale(1.1)';
-          }}
-          onMouseOut={(e) => {
-            e.target.style.transform = 'scale(1)';
-          }}
-          onLoad={() => setLoaded(true)}
-        />
-        {/* Blur overlay */}
-
+        {item.minted ? (
+          <img
+            src={item?.image}
+            style={styles.galleryImage}
+            onMouseOver={(e) => {
+              e.target.style.transform = 'scale(1.1)';
+            }}
+            onMouseOut={(e) => {
+              e.target.style.transform = 'scale(1)';
+            }}
+            onLoad={() => setLoaded(true)}
+          />
+        )
+          : (
+            <NFTCard
+              number={item.tokenId}
+              price={item.price}
+              isFree={item.isFreeSlot}
+            />
+          )}
         {item.ipfsURI && !item.isApproved ? <div style={styles.overlay}>
-        Awaiting Approval
+          Awaiting Approval
         </div> : null}
       </div>
     </Fragment>

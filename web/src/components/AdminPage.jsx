@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Container from 'react-bootstrap/Container'
 import { useAdvertisement } from '../hooks/useAdvertisement';
+import { useApproveAdvertisement } from '../hooks/useApproveAdvertisement';
+import { Spinner } from 'react-bootstrap';
 
 const styles = {
   galleryContainer: {
@@ -50,16 +52,20 @@ const styles = {
   }
 };
 
-const GalleryItem = ({ item }) => {  
+const GalleryItem = ({ item }) => {
+  const { mutate, isPending } = useApproveAdvertisement();
   return (
-    <Card style={{ width: '18rem' }}>
+    <Card style={{ width: '18rem', border: 'none' }}>
       <Card.Img variant="top" src={item.metadata.image} style={{ height: 261, objectFit: 'cover' }} />
       <Card.Body>
         <Card.Title>{item.metadata.name}</Card.Title>
         <Card.Text>
-        {item.metadata.description}
+          {item.metadata.description}
         </Card.Text>
-        <Button variant="primary">Approve</Button>
+        <Button variant="primary" onClick={() => mutate({ tokenId: item.tokenId })} disabled={isPending}>
+          {isPending ? <Spinner size='sm' animation="border" role="status" style={{ marginRight: 10 }} /> : null}
+          Approve
+        </Button>
       </Card.Body>
     </Card>
   )
@@ -84,18 +90,17 @@ const PhotoGallery = ({ data }) => {
 
 
 const AdminPage = () => {
-    const { data } = useAdvertisement();
-  
+  const { data } = useAdvertisement();
+
+  const items = useMemo(() => (data?.list || []).filter((item) => item.minted && !item.isApproved), [data]);
+
   return (
-    <div>
-       <div style={{ lineHeight: '16px' }}>
-        <Container style={{ border: '2px dashed #212529' }}>
-          <br />
-          <PhotoGallery data={(data?.list || []).filter((item) => item.isApproved === false)} />
-          <br />
-        </Container>
-        <br />
-      </div>
+    <div style={{ marginTop: 50 }}>
+      <Container style={{ border: '2px dashed #212529' }}>
+        {items.length ? <PhotoGallery data={items} />
+          : <h5 style={{ textAlign: 'center', margin: 20 }}>No advertisement found for approval</h5>}
+      </Container>
+      <br />
     </div>
   );
 };

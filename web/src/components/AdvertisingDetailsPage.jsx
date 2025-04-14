@@ -5,8 +5,6 @@ import { Card, Modal } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 
-console.log("AdvertisingDetailsPage", Modal);
-
 const AdvertisingDetailsPage = () => {
   const [showA, setShowA] = useState(false);
   const [showB, setShowB] = useState(false);
@@ -109,7 +107,7 @@ const AdvertisingDetailsPage = () => {
             img: 'https://i.imgur.com/WeSG1Hx.png',
             title: 'What are NFT Advertisements?',
             content: <>
-              A <a href="https://rinkeby.etherscan.io/token/0x1807d2c2dfa372ad31eeab48c38bb104a254d68a" style={{ color: '#CA5010' }} target="_blank" rel="noreferrer">non-fungible token</a> (ERC-721) serving as proof of ownership for your digital advertisement on the BlockchainBillboard.
+              A <a href="https://sepolia.etherscan.io/address/0xfdd10ada395ba9ab6a3854e20f848622a6dd8c0b" style={{ color: '#CA5010' }} target="_blank" rel="noreferrer">non-fungible token</a> (ERC-721) serving as proof of ownership for your digital advertisement on the BlockchainBillboard.
               Total supply is programmatically capped at 100 tokens. Each token will have a unique <i>TokenId</i> between 1 and 100.
             </>
           },
@@ -126,7 +124,7 @@ const AdvertisingDetailsPage = () => {
             img: 'https://i.imgur.com/JXJc5EX.png',
             title: 'Is advertising space limited?',
             content: <>
-              Yes, advertising space is limited to 100 advertisements. Our <a href="https://rinkeby.etherscan.io/address/0x1807d2c2dfa372ad31eeab48c38bb104a254d68a" style={{ color: '#CA5010' }} target="_blank" rel="noreferrer">smart contract</a> will immediately halt the issuing of further NFT Advertisements once the BlockchainBillboard reaches peak capacity. Be a part of blockchain internet history! 🌎
+              Yes, advertising space is limited to 100 advertisements. Our <a href="https://sepolia.etherscan.io/address/0xfdd10ada395ba9ab6a3854e20f848622a6dd8c0b" style={{ color: '#CA5010' }} target="_blank" rel="noreferrer">smart contract</a> will immediately halt the issuing of further NFT Advertisements once the BlockchainBillboard reaches peak capacity. Be a part of blockchain internet history! 🌎
             </>
           },
           {

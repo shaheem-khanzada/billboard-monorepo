@@ -1,25 +1,45 @@
 import { useMutation } from "@tanstack/react-query";
 import { toast } from 'react-hot-toast';
 import { abi, address } from "../contracts/abi.json";
-import { writeContract } from "wagmi/actions";
+import { waitForTransactionReceipt, writeContract } from '@wagmi/core'
+
 import { walletConfig } from "../config";
-import { parseEther } from "viem";
+import { formatEther, parseEther } from "viem";
+import { useAccount, useBalance } from "wagmi";
 
 export const useMintToken = () => {
+  const { address: walletAddress } = useAccount();
+  const { data } = useBalance({ address: walletAddress, config: walletConfig });
+
   return useMutation({
     mutationFn: async (params) => {
       try {
-        console.log("Minting parameters:", params);
+        const value = params.pop();
+        const balance = data?.value ? parseFloat(formatEther(data.value)) : 0;
+    
+        if (!balance || balance < parseFloat(value)) {
+          throw new Error("Insufficient balance");
+        }
+        
+        if (!walletAddress) {
+          throw new Error("Wallet address not found");
+        }
+        
         const result = await writeContract(walletConfig, {
           address,
           abi,
           functionName: "mintAdvertisement",
           args: params,
-          value: parseEther('0.001'), 
+          value: parseEther('0'),
         });
 
-        console.log("Transaction result:", result);
-        return result;
+        const receipt = await waitForTransactionReceipt(walletConfig, { hash: result });
+
+        if (receipt.status !== 'success') {
+          throw new Error("Mint Advertisement Transaction Failed");
+        }
+
+        return receipt;
       } catch (error) {
         throw error;
       }
@@ -32,10 +52,11 @@ export const useMintToken = () => {
       const { toastId } = context || {};
       toast.success("Mint Advertisement Transaction Successfull", { id: toastId, duration: 7000 });
     },
-    onError: (_error, _variables, context) => {
+    onError: (error, _variables, context) => {
       const { toastId } = context || {};
-      const defaultMessage = 'Mint Advertisement Transaction Failed';
-      toast.error(defaultMessage, { id: toastId, duration: 7000 });
+      const cause = error?.shortMessage?.split?.(":")?.pop?.()?.trim?.() || 'Unknown Error';
+      const defaultMessage = `Mint Advertisement Transaction Failed: ${cause}`;
+      toast.error(error.message || defaultMessage, { id: toastId, duration: 7000 });
     },
   });
 };

@@ -1,4 +1,4 @@
-const freeSlots = new Set([2, 14, 22, 34, 42, 54, 62, 74, 82, 94]);
+export const freeSlots = new Set([2, 14, 22, 34, 42, 54, 62, 74, 82, 94]);
 
 const generatePriceMap = () => {
     const ranges = [
@@ -21,7 +21,7 @@ const generatePriceMap = () => {
     );
 };
 
-const priceMap = generatePriceMap();
+export const priceMap = generatePriceMap();
 
 export const getSlotPrice = (slot: number): string => {
     if (freeSlots.has(slot)) return '0';

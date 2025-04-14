@@ -1,7 +1,7 @@
 {
-  "name": "metadeck-backend",
+  "name": "billboard-backend",
   "version": "1.0.14",
-  "description": "An Express metadeck backend",
+  "description": "An Express billboard backend",
   "license": "MIT",
   "main": "index.ts",
   "scripts": {
@@ -33,6 +33,7 @@
     "pino": "^9.4.0",
     "pino-http": "^10.0.0",
     "swagger-ui-express": "^5.0.0",
+    "viem": "^2.26.2",
     "web3": "^4.16.0",
     "zod": "^3.22.4"
   },
