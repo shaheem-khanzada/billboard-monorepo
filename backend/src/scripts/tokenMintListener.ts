@@ -67,11 +67,13 @@ async function processEvent(event: any, retries = 3) {
       }
 
       const existingAd = await AdvertisementModel.findOne({ tokenId }).lean();
+      const mint = { owner, tokenId, ipfsURI, metadata, blockNumber, transactionHash, isMinted: true };
       if (!existingAd) {
-        await AdvertisementModel.create({ owner, tokenId, ipfsURI, metadata, blockNumber, transactionHash });
+        await AdvertisementModel.create(mint);
         console.log("[MongoDB] Advertisement saved.");
       } else {
         console.log("[MongoDB] Advertisement already exists, skipping...");
+        await AdvertisementModel.updateOne({ tokenId }, { $set: mint });
       }
       return;
     } catch (error) {

@@ -10,12 +10,12 @@ import { useForm } from 'react-hook-form';
 
 import { useMintToken } from '../hooks/useMintToken';
 import { useAdvertisement } from '../hooks/useAdvertisement';
-import { getSlotPrice } from '../utils';
 import { useUploadFiles } from '../hooks/useUploadFiles';
 
 
 const FormExample = ({ account }) => {
-  const { data: advertisement } = useAdvertisement();
+  const { data } = useAdvertisement();
+  const { availableSlots, advertisements } = data || {};
   const { mutateAsync: uploadFiles, isPending: isUploading } = useUploadFiles();
   const { mutate: mintToken, isPending: isMinting } = useMintToken();
   const [currentPrice, setCurrentPrice] = useState('');
@@ -25,7 +25,9 @@ const FormExample = ({ account }) => {
 
   const handleSlotChange = (event) => {
     const currentSlot = parseInt(event.target.value);
-    setCurrentPrice(getSlotPrice(currentSlot));
+    const advertisement = advertisements.find((ad) => ad.tokenId === currentSlot);
+    const price = advertisement.isFreeMint ? 0 : advertisement.price;
+    setCurrentPrice(price);
     setCurrentSlot(currentSlot);
   };
 
@@ -122,7 +124,7 @@ const FormExample = ({ account }) => {
             isInvalid={!!errors.slotPosition}
           >
             <option value="">Select a slot</option>
-            {(advertisement?.availableSlots || []).map((slot) => (
+            {(availableSlots || []).map((slot) => (
               <option key={slot} value={slot}>{slot}</option>
             ))}
           </Form.Control>

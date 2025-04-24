@@ -5,55 +5,64 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract BlockchainBillboard is ERC721URIStorage, Ownable {
-    uint256 public totalMintedTokens = 0;
-    uint256 public maxSupply = 100;
     address public secret;
     mapping(bytes => bool) private usedSignatures;
     mapping(uint256 => bool) private mintedTokens;
 
-    event AdvertisementMinted(address indexed owner, uint256 indexed advertisementId, string ipfsURI);
-    
-    constructor(address _signer, address owner) ERC721("Blockchain Billboard", "BB") Ownable(owner) {
+    event AdvertisementMinted(
+        address indexed owner,
+        uint256 indexed advertisementId,
+        string ipfsURI
+    );
+
+    constructor(
+        address _signer,
+        address owner
+    ) ERC721("Blockchain Billboard", "BB") Ownable(owner) {
         secret = _signer;
     }
 
-    function mintAdvertisement(string memory ipfsURI, uint256 advertisementId, bytes calldata _signature) public payable {
-         require(
+    function mintAdvertisement(
+        string memory ipfsURI,
+        uint256 advertisementId,
+        bytes calldata _signature
+    ) public payable {
+        require(
             !usedSignatures[_signature],
             "mintAdvertisement: Signature already used"
         );
-        require(!mintedTokens[advertisementId], "mintAdvertisement: Slot unavailable!");
-        require(totalMintedTokens < maxSupply, "mintAdvertisement: Max capacity reached!");
-         require(
+        require(
+            !mintedTokens[advertisementId],
+            "mintAdvertisement: Slot unavailable!"
+        );
+        require(
             _verifyHashSignature(
                 keccak256(abi.encode(msg.sender, ipfsURI, advertisementId)),
                 _signature
             ),
             "mintAdvertisement: Signature is invalid"
         );
-         usedSignatures[_signature] = true;
+        usedSignatures[_signature] = true;
         _mintAdvertisement(msg.sender, advertisementId, ipfsURI);
     }
 
-    function _mintAdvertisement(address recipient, uint256 advertisementId, string memory ipfsURI) internal {
+    function _mintAdvertisement(
+        address recipient,
+        uint256 advertisementId,
+        string memory ipfsURI
+    ) internal {
         _mint(recipient, advertisementId);
         _setTokenURI(advertisementId, ipfsURI);
         mintedTokens[advertisementId] = true;
-        totalMintedTokens++;
 
         emit AdvertisementMinted(recipient, advertisementId, ipfsURI);
-    }
-
-    function updateMaxSupply(uint256 newMaxSupply) external onlyOwner {
-        require(newMaxSupply > maxSupply, "New limit must be higher!");
-        maxSupply = newMaxSupply;
     }
 
     function withdrawFunds() external onlyOwner {
         payable(msg.sender).transfer(address(this).balance);
     }
 
-        function _verifyHashSignature(
+    function _verifyHashSignature(
         bytes32 freshHash,
         bytes memory signature
     ) internal view returns (bool) {

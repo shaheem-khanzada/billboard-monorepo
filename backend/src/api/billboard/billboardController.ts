@@ -4,8 +4,18 @@ import { handleServiceResponse } from "@/common/utils/httpHandlers";
 import { billboardService } from "./billboardService";
 
 class BillboardController {
-  public mintList: RequestHandler = async (req: Request, res: Response) => {
-    const serviceResponse = await billboardService.mintList();
+  public fetchAdvertisements: RequestHandler = async (req: Request, res: Response) => {
+    const serviceResponse = await billboardService.fetchAdvertisements();
+    return handleServiceResponse(serviceResponse, res);
+  };
+
+  public updateTotalSupply: RequestHandler = async (req: Request, res: Response) => {
+    const serviceResponse = await billboardService.updateTotalSupply(req?.body?.totalSupply);
+    return handleServiceResponse(serviceResponse, res);
+  };
+
+  public updateAdvertisement: RequestHandler = async (req: Request, res: Response) => {
+    const serviceResponse = await billboardService.updateAdvertisement(Number(req.params.tokenId), req.body);
     return handleServiceResponse(serviceResponse, res);
   };
 

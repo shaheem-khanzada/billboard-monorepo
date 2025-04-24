@@ -1,6 +1,6 @@
 import { ServiceResponse } from "@/common/models/serviceResponse";
 import { env } from "@/common/utils/envConfig";
-import { AdvertisementModel } from "@/schemas/AdvertisementSchema";
+import { AdvertisementModel, IAdvertisement } from "@/schemas/AdvertisementSchema";
 import { StatusCodes } from "http-status-codes";
 import { PinataSDK } from "pinata";
 import { billboardRepository } from "./billboardRepository";
@@ -14,17 +14,118 @@ export class BillboardService {
     });
   }
 
-  async mintList() {
+  async fetchAdvertisements() {
     try {
-      const advertisement = await AdvertisementModel.find().sort({ tokenId: 1 }).lean();
-      if (!advertisement) {
-        return ServiceResponse.success("success", { advertisement }, StatusCodes.OK)
+      const advertisements = await AdvertisementModel.find().sort({ tokenId: 1 }).lean();
+      const totalSupply = await AdvertisementModel.countDocuments();
+      if (!advertisements) {
+        return ServiceResponse.success("success", { advertisements, totalSupply }, StatusCodes.OK)
       }
-      return ServiceResponse.success("success", { advertisement }, StatusCodes.OK);
+      return ServiceResponse.success("success", { advertisements, totalSupply }, StatusCodes.OK);
     } catch (error: any) {
       return ServiceResponse.success("Failed to fetch tokens", null, StatusCodes.INTERNAL_SERVER_ERROR);
     }
   }
+
+  async updateAdvertisement(tokenId: number, updateData: Partial<IAdvertisement>) {
+    try {
+      const updated = await AdvertisementModel.findOneAndUpdate(
+        { tokenId },
+        { $set: updateData },
+        { new: true }
+      ).lean();
+
+      if (!updated) {
+        return ServiceResponse.success("Advertisement not found", null, StatusCodes.NOT_FOUND);
+      }
+
+      return ServiceResponse.success("Advertisement updated successfully", { advertisement: updated }, StatusCodes.OK);
+    } catch (error: any) {
+      return ServiceResponse.success("Failed to update advertisement", null, StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async updateTotalSupply(totalSupply: number) {
+    try {
+      if (!totalSupply || isNaN(totalSupply) || totalSupply <= 0) {
+        return ServiceResponse.failure(
+          "Invalid 'totalSupply' value. It must be a positive number.",
+          null,
+          StatusCodes.BAD_REQUEST
+        );
+      }
+  
+      if (totalSupply < 100) {
+        return ServiceResponse.failure(
+          "Total supply cannot be less than 100.",
+          null,
+          StatusCodes.BAD_REQUEST
+        );
+      }
+  
+      const currentSupply = await AdvertisementModel.countDocuments();
+  
+      const lastMintedAd = await AdvertisementModel
+        .findOne({ isMinted: true })
+        .sort({ tokenId: -1 })
+        .lean();
+  
+      if (lastMintedAd && totalSupply < lastMintedAd.tokenId) {
+        return ServiceResponse.failure(
+          `Cannot reduce supply to ${totalSupply} because token #${lastMintedAd.tokenId} is already minted. Supply must be increased beyond this minted tokenId.`,
+          null,
+          StatusCodes.BAD_REQUEST
+        );
+      }
+  
+      // CASE 1: Increasing supply
+      if (totalSupply > currentSupply) {
+        const toCreate = totalSupply - currentSupply;
+  
+        const newAds = Array.from({ length: toCreate }, (_, i) => {
+          const tokenId = currentSupply + i + 1;
+          return { tokenId };
+        });
+  
+        await AdvertisementModel.insertMany(newAds);
+  
+        return ServiceResponse.success("Advertisements increased", {
+          added: newAds.length,
+          newTotal: currentSupply + newAds.length
+        }, StatusCodes.OK);
+      }
+  
+      // CASE 2: Decreasing supply (safe removal)
+      if (totalSupply < currentSupply) {
+        const removableAds = await AdvertisementModel.find({
+          tokenId: { $gt: totalSupply },
+          isMinted: { $ne: true }
+        });
+  
+        const removableIds = removableAds.map(ad => ad._id);
+  
+        if (removableIds.length) {
+          await AdvertisementModel.deleteMany({ _id: { $in: removableIds } });
+        }
+  
+        return ServiceResponse.success("Advertisements decreased", {
+          removed: removableIds.length,
+          newTotal: await AdvertisementModel.countDocuments()
+        }, StatusCodes.OK);
+      }
+  
+      // CASE 3: No change
+      return ServiceResponse.success("No changes made to supply", {
+        currentSupply
+      }, StatusCodes.OK);
+  
+    } catch (error: any) {
+      console.error("Error updating totalSupply:", error);
+      return ServiceResponse.failure("Failed to update totalSupply", null, StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+  }
+  
+
 
   async approveAdvertisement({ tokenId }: { tokenId: number }) {
     try {
@@ -33,11 +134,11 @@ export class BillboardService {
         { $set: { isApproved: true } },
         { new: true }
       );
-  
+
       if (!advertisement) {
         return ServiceResponse.failure("Advertisement not found", null, StatusCodes.NOT_FOUND);
       }
-  
+
       return ServiceResponse.success("Advertisement approved successfully", { advertisement }, StatusCodes.OK);
     } catch (error: any) {
       console.error("Error approving advertisement:", error);
@@ -46,29 +147,33 @@ export class BillboardService {
   }
 
   async webhook(body: any) {
+    console.log('webhook', body)
     try {
       const {
         event: {
           data: {
-            block: { hash: txHash, logs, number },
+            block: { hash: transactionHash, logs, number: blockNumber },
           },
         },
       } = body;
 
-      if (!logs || logs.length === 0 || !txHash) {
+      if (!logs || logs.length === 0 || !transactionHash) {
         return ServiceResponse.success('no logs or hash found', null, StatusCodes.OK);
       }
-      
-      const parsedLog = await billboardRepository.parseEventData(logs[0] as any);
 
-      if (!parsedLog) {
+      const mint = await billboardRepository.parseEventData(logs[0] as any);
+
+      if (!mint) {
         return ServiceResponse.success("can't parse event", null, StatusCodes.OK);
       }
 
-      parsedLog.transactionHash = txHash;
-      parsedLog.blockNumber = number;
+      Object.assign(mint, { transactionHash, blockNumber, isMinted: true });
 
-      console.log("Parsed Log:", parsedLog);
+      const { tokenId } = mint;
+
+      console.log("Parsed Log:", mint);
+
+      await AdvertisementModel.updateOne({ tokenId }, { $set: mint });
 
       return ServiceResponse.success("success", {}, StatusCodes.OK);
     } catch (error: any) {

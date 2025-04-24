@@ -5,6 +5,11 @@ import App from './App.jsx'
 import { BrowserRouter } from "react-router";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'; 
+
+// Register all Community features
+ModuleRegistry.registerModules([AllCommunityModule]);
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>

@@ -67,18 +67,19 @@ const styles = {
 
 const GalleryItem = ({ item }) => {
   const [loaded, setLoaded] = useState(false);
-  console.log('item', item)
+
+  console.log("item", item);
   return (
     <Fragment>
-      {!loaded && item.minted && (
+      {!loaded && item.isMinted && (
         <div style={styles.spinnerContainer}>
           <Spinner animation="border" role="status" />
         </div>
       )}
       <div style={styles.galleryItem}>
-        {item.minted ? (
+        {item.isMinted ? (
           <img
-            src={item?.image}
+            src={item?.metadata.image}
             style={styles.galleryImage}
             onMouseOver={(e) => {
               e.target.style.transform = 'scale(1.1)';
@@ -93,7 +94,7 @@ const GalleryItem = ({ item }) => {
             <NFTCard
               number={item.tokenId}
               price={item.price}
-              isFree={item.isFreeSlot}
+              isFree={item.isFreeMint}
             />
           )}
         {item.ipfsURI && !item.isApproved ? <div style={styles.overlay}>

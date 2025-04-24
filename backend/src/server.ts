@@ -10,6 +10,7 @@ import rateLimiter from "@/common/middleware/rateLimiter";
 import { env } from "@/common/utils/envConfig";
 import { billboardRouter } from "./api/billboard/billboardRouter";
 import "./scripts/tokenMintListener";
+import "./scripts/seedAdvertisements";
 
 const logger = pino({ name: "server start" });
 const app: Express = express();

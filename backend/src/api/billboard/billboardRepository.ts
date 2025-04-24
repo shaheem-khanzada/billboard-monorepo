@@ -69,8 +69,9 @@ export class BillboardRepository {
     }
 
     const metadata = await this.fetchIPFSData(args.ipfsURI);
+    const { advertisementId, ...rest } = args;
 
-    return { ...args, tokenId: Number(args.advertisementId), metadata };
+    return { ...rest, tokenId: Number(advertisementId), metadata };
   };
 
 

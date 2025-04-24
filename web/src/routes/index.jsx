@@ -1,9 +1,9 @@
 import { Routes, Route } from "react-router";
-import BillBoardPage from '../components/BillBoardPage';
-import AdvertisingDetailsPage from '../components/AdvertisingDetailsPage';
-import IssueAdvertisementPage from '../components/IssueAdvertisementPage';
-import DoesNotExistPage from '../components/DoesNotExistPage';
-import AdminPage from '../components/AdminPage';
+import BillBoardPage from '../screens/BillBoardPage';
+import AdvertisingDetailsPage from '../screens/AdvertisingDetailsPage';
+import IssueAdvertisementPage from '../screens/IssueAdvertisementPage';
+import DoesNotExistPage from '../screens/DoesNotExistPage';
+import AdminPage from '../screens/AdminPage';
 import { useIsAdmin } from "../hooks/useAdmin";
 
 

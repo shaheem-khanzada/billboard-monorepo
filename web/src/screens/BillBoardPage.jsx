@@ -3,7 +3,7 @@ import { Link } from 'react-router'
 import Container from 'react-bootstrap/Container'
 import Alert from 'react-bootstrap/Alert'
 import { useAdvertisement } from '../hooks/useAdvertisement';
-import PhotoGallery from './PhotoGallary';
+import PhotoGallery from '../components/PhotoGallary';
 import { useAccount, useChainId } from 'wagmi';
 
 const BillBoardPage = () => {
@@ -12,6 +12,7 @@ const BillBoardPage = () => {
   const [showBanner, setShowBanner] = useState(true);
   const chainId = useChainId();
   console.log('chainId', chainId);
+  console.log('data useAdvertisement', data);
 
   return (
     <div style={{ background: 'white' }}>
@@ -40,7 +41,7 @@ const BillBoardPage = () => {
 
       <div style={{ lineHeight: '16px' }}>
         <Container style={{ border: '2px dashed #212529' }}>
-          <PhotoGallery data={data?.list} />
+          <PhotoGallery data={data?.advertisements} />
         </Container>
         <br />
       </div>

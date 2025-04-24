@@ -107,7 +107,7 @@ const AdvertisingDetailsPage = () => {
             img: 'https://i.imgur.com/WeSG1Hx.png',
             title: 'What are NFT Advertisements?',
             content: <>
-              A <a href="https://sepolia.etherscan.io/address/0xfdd10ada395ba9ab6a3854e20f848622a6dd8c0b" style={{ color: '#CA5010' }} target="_blank" rel="noreferrer">non-fungible token</a> (ERC-721) serving as proof of ownership for your digital advertisement on the BlockchainBillboard.
+              A <a href="https://sepolia.etherscan.io/address/0x7299457936a2A15Ab7BE0af327E4B65D694aBd91" style={{ color: '#CA5010' }} target="_blank" rel="noreferrer">non-fungible token</a> (ERC-721) serving as proof of ownership for your digital advertisement on the BlockchainBillboard.
               Total supply is programmatically capped at 100 tokens. Each token will have a unique <i>TokenId</i> between 1 and 100.
             </>
           },
@@ -124,7 +124,7 @@ const AdvertisingDetailsPage = () => {
             img: 'https://i.imgur.com/JXJc5EX.png',
             title: 'Is advertising space limited?',
             content: <>
-              Yes, advertising space is limited to 100 advertisements. Our <a href="https://sepolia.etherscan.io/address/0xfdd10ada395ba9ab6a3854e20f848622a6dd8c0b" style={{ color: '#CA5010' }} target="_blank" rel="noreferrer">smart contract</a> will immediately halt the issuing of further NFT Advertisements once the BlockchainBillboard reaches peak capacity. Be a part of blockchain internet history! 🌎
+              Yes, advertising space is limited to 100 advertisements. Our <a href="https://sepolia.etherscan.io/address/0x7299457936a2A15Ab7BE0af327E4B65D694aBd91" style={{ color: '#CA5010' }} target="_blank" rel="noreferrer">smart contract</a> will immediately halt the issuing of further NFT Advertisements once the BlockchainBillboard reaches peak capacity. Be a part of blockchain internet history! 🌎
             </>
           },
           {
